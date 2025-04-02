@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Data
 @Service
@@ -14,11 +15,23 @@ import java.util.List;
 public class OrdinateurService {
 
     @Autowired
-    private OrdinateurRepository ordinateurRepository;
+    private static OrdinateurRepository ordinateurRepository;
 
-   public List<Ordinateur> getAllOrdinateurs() {
-       ordinateurRepository.findAll();
-       return List.of();
-       //ggggg
-   }
+    public Optional<Ordinateur> getOrdinateurById(int id) {
+        return ordinateurRepository.findById(id);
+     }
+
+     public Iterable<Ordinateur> getOrdinateurs() {
+        return ordinateurRepository.findAll();
+     }
+
+     public void deleteOrdinateur(int id) {
+        ordinateurRepository.deleteById(id);
+     }
+
+     public static Ordinateur saveOrdinateur(Ordinateur ordinateur) {
+        Ordinateur savedOrdinateur = ordinateurRepository.save(ordinateur);
+        return savedOrdinateur;
+     }
+
 }

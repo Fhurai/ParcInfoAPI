@@ -10,8 +10,8 @@ import lombok.Data;
 public class Ordinateur {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "idOrdinateur")
-    private int idOrdinateur;
+    @Column(name = "id")
+    private int id;
 
     private Boolean deBureau = true;
 }
