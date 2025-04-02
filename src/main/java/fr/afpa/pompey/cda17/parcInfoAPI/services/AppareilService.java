@@ -9,9 +9,13 @@ import java.util.Optional;
 
 @Data
 @Service
-public abstract class AppareilService<T extends Appareil> {
+public class AppareilService<T extends Appareil> {
 
     private AppareilRepository appareilRepository;
+
+    public AppareilService(AppareilRepository appareilRepository) {
+        this.appareilRepository = appareilRepository;
+    }
 
     public Optional<Appareil> findByLibelle(String libelle) {
         return appareilRepository.getAppareilByLibelle(libelle);
