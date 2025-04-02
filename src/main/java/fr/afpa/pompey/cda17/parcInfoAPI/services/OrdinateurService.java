@@ -19,5 +19,6 @@ public class OrdinateurService {
    public List<Ordinateur> getAllOrdinateurs() {
        ordinateurRepository.findAll();
        return List.of();
+       //ggggg
    }
 }
