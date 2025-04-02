@@ -2,8 +2,10 @@ package fr.afpa.pompey.cda17.parcInfoAPI.models;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
+@NoArgsConstructor
 @Entity
 @Table(name= "appareils")
 public class Appareil {
@@ -13,6 +15,6 @@ public class Appareil {
     @Column(name= "id")
     private long id;
 
-    @Column(name= "libelle")
+    @Column(name= "libelle", nullable = false, unique = true, length = 30)
     private String libelle;
 }
