@@ -10,9 +10,9 @@ public class Appareil {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name= "id")
+    @Column(name= "idAppareil")
     private long id;
 
-    @Column(name= "libelle")
+    @Column(name= "libelle", nullable = false, length = 30)
     private String libelle;
 }
