@@ -12,6 +12,7 @@ package fr.afpa.pompey.cda17.parcInfoAPI.services;
 
 import fr.afpa.pompey.cda17.parcInfoAPI.models.Personne;
 import fr.afpa.pompey.cda17.parcInfoAPI.repositories.PersonneRepository;
+import jakarta.transaction.Transactional;
 import lombok.Data;
 import org.springframework.stereotype.Service;
 import java.util.Optional;
@@ -22,6 +23,7 @@ import java.util.Optional;
  */
 @Data
 @Service
+@Transactional
 public class PersonneService {
 
     /**

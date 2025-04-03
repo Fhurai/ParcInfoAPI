@@ -75,4 +75,12 @@ public class Personne {
      */
     @ManyToMany(fetch = FetchType.EAGER)
     private List<Appareil> appareils;
+
+    public boolean addAppareil(Appareil appareil){
+        return appareils.add(appareil);
+    }
+
+    public boolean removeAppareil(Appareil appareil){
+        return appareils.remove(appareil);
+    }
 }

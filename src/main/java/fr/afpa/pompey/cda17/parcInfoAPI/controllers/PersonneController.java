@@ -115,7 +115,8 @@ public class PersonneController {
             }
 
             if(personne.getAppareils() != null && !personne.getAppareils().equals(currentPersonne.getAppareils())){
-                currentPersonne.setAppareils(personne.getAppareils());
+                currentPersonne.getAppareils().clear();
+                personne.getAppareils().forEach(currentPersonne::addAppareil);
             }
 
             personneService.save(currentPersonne);
