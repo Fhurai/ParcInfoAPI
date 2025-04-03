@@ -14,10 +14,14 @@ import java.util.Optional;
 
 public class OrdinateurService {
 
-    @Autowired
-    private static OrdinateurRepository ordinateurRepository;
+    public OrdinateurService(OrdinateurRepository ordinateurRepository) {
+        this.ordinateurRepository = ordinateurRepository;
+    }
 
-    public Optional<Ordinateur> getOrdinateurById(int id) {
+    @Autowired
+    private OrdinateurRepository ordinateurRepository;
+
+    public Optional<Ordinateur> getOrdinateurById(long id) {
         return ordinateurRepository.findById(id);
      }
 
@@ -25,11 +29,11 @@ public class OrdinateurService {
         return ordinateurRepository.findAll();
      }
 
-     public void deleteOrdinateur(int id) {
+     public void deleteOrdinateur(long id) {
         ordinateurRepository.deleteById(id);
      }
 
-     public static Ordinateur saveOrdinateur(Ordinateur ordinateur) {
+     public  Ordinateur saveOrdinateur(Ordinateur ordinateur) {
         Ordinateur savedOrdinateur = ordinateurRepository.save(ordinateur);
         return savedOrdinateur;
      }

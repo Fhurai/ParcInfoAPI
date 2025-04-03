@@ -5,12 +5,13 @@ import lombok.Data;
 
 @Data
 @Entity
+@Inheritance(strategy = InheritanceType.JOINED)
 @Table(name= "appareils")
 public class Appareil {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name= "id")
+    @Column(name= "idAppareil")
     private long id;
 
     @Column(name= "libelle")

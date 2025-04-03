@@ -5,13 +5,21 @@ import lombok.Data;
 
 @Data
 @Entity
-@Table(name = "Ordinateur")
+@Table(name = "ordinateurs")
+public class Ordinateur  {
 
-public class Ordinateur {
+
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "id")
-    private int id;
+    @Column(name = "idAppareil")
+    private long idAppareil;
 
-    private Boolean deBureau = true;
+    @Column(name = "deBureau", nullable = false)
+    private Boolean deBureau;
+
+    @OneToOne(cascade = CascadeType.PERSIST)
+    @MapsId
+    @JoinColumn(name = "idAppareil", referencedColumnName = "idAppareil")
+    private Appareil appareil;
+
+
 }
