@@ -40,16 +40,21 @@ public class OrdinateurController {
      */
     @PostMapping("/ordinateur")
     public ResponseEntity<Ordinateur> createOrdinateur(@RequestBody Ordinateur ordinateur) {
-        // Vérifie que l'objet ne contient pas d'identifiant (ou qu'il est à sa valeur par défaut, ici 0)
+        // Vérifie que l'objet ne contient pas d'identifiant déjà défini (la valeur par défaut est ici 0)
+        // HTTP 400 (Bad Request) est retourné si l'id est défini par le client, car il ne doit pas être précisé
         if (ordinateur.getAppareil().getId() != 0) {
-            // Le client ne devrait pas définir l'id, on retourne une mauvaise requête
+            // Le client ne devrait pas définir l'id, on retourne une réponse 400 Bad Request
             return ResponseEntity.badRequest().build();
         }
-        // Sauvegarde l'objet Ordinateur
+
+        // Sauvegarde l'objet Ordinateur dans la base de données
         Ordinateur savedOrdinateur = ordinateurService.saveOrdinateur(ordinateur);
+
         // Retourne l'objet sauvegardé avec un statut HTTP 200 (OK)
+        // Le code 200 indique que la requête a réussi et que la réponse contient le résultat attendu
         return ResponseEntity.ok(savedOrdinateur);
     }
+
 
 
     /**
@@ -112,23 +117,37 @@ public class OrdinateurController {
      * @return L'objet {@link Ordinateur} mis à jour ou {@code null} si l'ordinateur n'existe pas.
      */
     @PutMapping("/ordinateur/{id}")
-    public Ordinateur updateOrdinateur(@PathVariable long id, @RequestBody Ordinateur ordinateur) {
-        // Récupère l'ordinateur existant grâce à l'id
-        Optional<Ordinateur> e = ordinateurService.getOrdinateurById(id);
-        if (e.isPresent()) {
-            // Si l'ordinateur existe, récupère l'objet courant
-            Ordinateur current = e.get();
+    public ResponseEntity<Ordinateur> updateOrdinateur(@PathVariable long id, @RequestBody Ordinateur ordinateur) {
+        try {
+            // Récupère l'ordinateur existant grâce à l'id
+            Optional<Ordinateur> e = ordinateurService.getOrdinateurById(id);
+            if (e.isPresent()) {
+                // Si l'ordinateur existe, récupère l'objet courant
+                Ordinateur current = e.get();
 
-            // Met à jour le champ 'deBureau' avec la valeur fournie dans l'objet de la requête
-            current.setDeBureau(ordinateur.getDeBureau());
+                // Met à jour le champ 'deBureau' avec la valeur fournie dans l'objet de la requête
+                current.setDeBureau(ordinateur.getDeBureau());
 
-            // Sauvegarde l'ordinateur mis à jour et retourne l'objet modifié
-            return ordinateurService.saveOrdinateur(current);
-        } else {
-            // Si l'ordinateur n'est pas trouvé, retourne null (possibilité d'améliorer la gestion en retournant une réponse 404)
-            return null;
+                // Vérifie que l'objet Appareil de la requête n'est pas null et contient une valeur pour 'libelle'
+                if (ordinateur.getAppareil() != null && ordinateur.getAppareil().getLibelle() != null) {
+                    // Met à jour le libellé de l'objet Appareil associé
+                    current.getAppareil().setLibelle(ordinateur.getAppareil().getLibelle());
+                }
+
+                // Sauvegarde l'ordinateur mis à jour (les modifications sur Appareil seront persistées grâce à la cascade)
+                Ordinateur saved = ordinateurService.saveOrdinateur(current);
+                // Retourne l'objet modifié avec un statut HTTP 200 (OK)
+                return ResponseEntity.ok(saved);
+            } else {
+                // Si l'ordinateur n'est pas trouvé, retourne une réponse HTTP 404 (Not Found)
+                return ResponseEntity.notFound().build();
+            }
+        } catch (Exception ex) {
+            // En cas d'erreur interne, retourne une réponse HTTP 500 (Internal Server Error)
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
+
 
     /**
      * Supprime un ordinateur en fonction de son identifiant.
