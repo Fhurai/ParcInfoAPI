@@ -73,7 +73,7 @@ public class Personne {
      * immédiatement avec les données de la personne (peut impacter les performances).
      * </p>
      */
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.MERGE)
     private List<Appareil> appareils;
 
     public boolean addAppareil(Appareil appareil){

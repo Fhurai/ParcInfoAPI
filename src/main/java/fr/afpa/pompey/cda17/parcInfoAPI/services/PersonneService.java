@@ -10,8 +10,11 @@
  */
 package fr.afpa.pompey.cda17.parcInfoAPI.services;
 
+import fr.afpa.pompey.cda17.parcInfoAPI.models.Appareil;
 import fr.afpa.pompey.cda17.parcInfoAPI.models.Personne;
+import fr.afpa.pompey.cda17.parcInfoAPI.repositories.AppareilRepository;
 import fr.afpa.pompey.cda17.parcInfoAPI.repositories.PersonneRepository;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.Data;
 import org.springframework.stereotype.Service;
@@ -26,6 +29,8 @@ import java.util.Optional;
 @Transactional
 public class PersonneService {
 
+    private final AppareilService appareilService;
+    private final AppareilRepository appareilRepository;
     /**
      * Repository injecté pour les opérations de persistance des personnes.
      */
@@ -36,8 +41,10 @@ public class PersonneService {
      *
      * @param personneRepository Le repository des personnes à injecter
      */
-    public PersonneService(PersonneRepository personneRepository) {
+    public PersonneService(PersonneRepository personneRepository, AppareilService appareilService, AppareilRepository appareilRepository) {
         this.personneRepository = personneRepository;
+        this.appareilService = appareilService;
+        this.appareilRepository = appareilRepository;
     }
 
     /**
@@ -76,6 +83,41 @@ public class PersonneService {
      * @return L'entité Personne sauvegardée avec son ID généré
      */
     public Personne save(Personne personne) {
+        return personneRepository.save(personne);
+    }
+
+    /**
+     * Associe un appareil existant à une personne existante via une relation ManyToMany.
+     *
+     * @param personneId Identifiant de la personne à laquelle ajouter l'appareil
+     * @param appareilId Identifiant de l'appareil à associer
+     * @return La personne mise à jour avec le nouvel appareil ajouté
+     * @throws EntityNotFoundException Si la personne ou l'appareil n'existe pas en base
+     */
+    public Personne addAppareilToPersonne(Long personneId, Long appareilId) {
+        // Récupère la Personne et l'Appareil depuis la base de données
+        Personne personne = personneRepository.findById(personneId)
+                .orElseThrow(() -> new EntityNotFoundException("Personne not found"));
+        Appareil appareil = appareilRepository.findById(appareilId)
+                .orElseThrow(() -> new EntityNotFoundException("Appareil not found"));
+
+        // Ajoute l'Appareil à la collection de la Personne (côté maître de la relation ManyToMany)
+        personne.getAppareils().add(appareil);
+
+        // Sauvegarde la Personne (CascadeType.MERGE garantit la mise à jour de l'Appareil si nécessaire)
+        return personneRepository.save(personne);
+    }
+
+    public Personne removeAppareilFromPersonne(Long personneId, Long appareilId) {
+        // Récupère la Personne et l'Appareil depuis la base de données
+        Personne personne = personneRepository.findById(personneId)
+                .orElseThrow(() -> new EntityNotFoundException("Personne not found"));
+        Appareil appareil = appareilRepository.findById(appareilId)
+                .orElseThrow(() -> new EntityNotFoundException("Appareil not found"));
+
+        personne.getAppareils().remove(appareil);
+
+        // Sauvegarde la Personne (CascadeType.MERGE garantit la mise à jour de l'Appareil si nécessaire)
         return personneRepository.save(personne);
     }
 }

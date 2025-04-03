@@ -11,6 +11,7 @@
 package fr.afpa.pompey.cda17.parcInfoAPI.controllers;
 
 import fr.afpa.pompey.cda17.parcInfoAPI.models.Personne;
+import fr.afpa.pompey.cda17.parcInfoAPI.services.AppareilService;
 import fr.afpa.pompey.cda17.parcInfoAPI.services.PersonneService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import java.net.URI;
 import java.util.Optional;
+import java.util.logging.Logger;
 
 /**
  * Annotation Spring indiquant que cette classe est un contrôleur REST.
@@ -31,6 +33,8 @@ public class PersonneController {
      */
     @Autowired
     private PersonneService personneService;
+    @Autowired
+    private AppareilService appareilService;
 
     /**
      * Crée une nouvelle personne via une requête POST.
@@ -135,5 +139,24 @@ public class PersonneController {
     @DeleteMapping("/personne/{id}")
     public void deletePersonne(@PathVariable("id") long id) {
         personneService.deletePersonne(id);
+    }
+
+    @PutMapping("/personnes/{personneId}/appareils/{appareilId}")
+    public ResponseEntity<Personne> addAppareilToPersonne(
+            @PathVariable Long personneId,
+            @PathVariable Long appareilId
+    ) {
+        Personne updatedPersonne = personneService.addAppareilToPersonne(personneId, appareilId);
+        return ResponseEntity.ok(updatedPersonne);
+    }
+
+    @DeleteMapping("/personnes/{personneId}/appareils/{appareilId}")
+    public ResponseEntity<Personne> removeAppareilToPersonne(
+            @PathVariable Long personneId,
+            @PathVariable Long appareilId
+    ) {
+        Personne updatedPersonne =
+                personneService.removeAppareilFromPersonne(personneId, appareilId);
+        return ResponseEntity.ok(updatedPersonne);
     }
 }
