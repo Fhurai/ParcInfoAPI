@@ -18,6 +18,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import java.net.URI;
+import java.util.Arrays;
 import java.util.Optional;
 import java.util.logging.Logger;
 
@@ -28,13 +29,8 @@ import java.util.logging.Logger;
 @RestController
 public class PersonneController {
 
-    /**
-     * Injection automatique du service de gestion des personnes.
-     */
     @Autowired
     private PersonneService personneService;
-    @Autowired
-    private AppareilService appareilService;
 
     /**
      * Crée une nouvelle personne via une requête POST.
@@ -118,11 +114,6 @@ public class PersonneController {
                 currentPersonne.setTelephone(personne.getTelephone());
             }
 
-            if(personne.getAppareils() != null && !personne.getAppareils().equals(currentPersonne.getAppareils())){
-                currentPersonne.getAppareils().clear();
-                personne.getAppareils().forEach(currentPersonne::addAppareil);
-            }
-
             personneService.save(currentPersonne);
             return currentPersonne;
         } else {
@@ -141,7 +132,14 @@ public class PersonneController {
         personneService.deletePersonne(id);
     }
 
-    @PutMapping("/personnes/{personneId}/appareils/{appareilId}")
+    /**
+     * Associe un appareil existant à une personne.
+     *
+     * @param personneId Identifiant de la personne cible
+     * @param appareilId Identifiant de l'appareil à associer
+     * @return ResponseEntity<Personne> avec la personne mise à jour (code 200)
+     */
+    @PutMapping("/personnes/{personneId}/appareil/{appareilId}")
     public ResponseEntity<Personne> addAppareilToPersonne(
             @PathVariable Long personneId,
             @PathVariable Long appareilId
@@ -150,13 +148,36 @@ public class PersonneController {
         return ResponseEntity.ok(updatedPersonne);
     }
 
-    @DeleteMapping("/personnes/{personneId}/appareils/{appareilId}")
+    /**
+     * Dissocie un appareil d'une personne.
+     *
+     * @param personneId Identifiant de la personne cible
+     * @param appareilId Identifiant de l'appareil à dissocier
+     * @return ResponseEntity<Personne> avec la personne mise à jour (code 200)
+     */
+    @DeleteMapping("/personnes/{personneId}/appareil/{appareilId}")
     public ResponseEntity<Personne> removeAppareilToPersonne(
             @PathVariable Long personneId,
             @PathVariable Long appareilId
     ) {
         Personne updatedPersonne =
                 personneService.removeAppareilFromPersonne(personneId, appareilId);
+        return ResponseEntity.ok(updatedPersonne);
+    }
+
+    /**
+     * Met à jour la liste complète des appareils associés à une personne.
+     *
+     * @param appareils Tableau d'identifiants d'appareils
+     * @param personneId Identifiant de la personne cible
+     * @return ResponseEntity<Personne> avec la personne mise à jour (code 200)
+     */
+    @PutMapping("/personnes/{personneId}/appareils")
+    public ResponseEntity<Personne> addAppareilToPersonne(
+            @RequestBody String[] appareils,
+            @PathVariable Long personneId
+    ) {
+        Personne updatedPersonne = personneService.updateAppareilsToPersonne(personneId, appareils);
         return ResponseEntity.ok(updatedPersonne);
     }
 }

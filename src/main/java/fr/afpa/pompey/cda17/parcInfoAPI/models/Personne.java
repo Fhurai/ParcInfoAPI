@@ -21,11 +21,14 @@ import java.util.List;
 public class Personne {
 
     /**
-     * Identifiant unique généré automatiquement pour la personne.
-     * Utilise une stratégie de génération automatique définie par la base de données.
+     * Identifiant unique auto-généré de l'appareil.
+     * <p>
+     * Stratégie de génération automatique configurée avec la stratégie IDENTITY
+     * pour la compatibilité avec la plupart des bases de données relationnelles.
+     * </p>
      */
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "idPersonne")
     private long id;
 
@@ -65,22 +68,18 @@ public class Personne {
     private LocalDate dateNaissance;
 
     /**
-     * Liste des appareils électroniques associés à la personne.
+     * Liste des appareils associés à la personne.
      * <p>
-     * Relation ManyToMany : une personne peut posséder plusieurs appareils,
-     * et un appareil peut appartenir à plusieurs personnes.
-     * Le chargement EAGER signifie que tous les appareils sont récupérés
-     * immédiatement avec les données de la personne (peut impacter les performances).
+     * Configuration de la relation :
+     * - Chargement immédiat (EAGER) → À utiliser avec précaution
+     * - Cascade MERGE seulement → Sécurité des opérations
+     * - Table de jointure implicite (personne_appareils)
      * </p>
+     *
+     * @implNote Une relation bidirectionnelle nécessiterait d'ajouter dans Appareil :
+     * @ManyToMany(mappedBy = "appareils")
+     * private List<Personne> proprietaires;
      */
     @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.MERGE)
     private List<Appareil> appareils;
-
-    public boolean addAppareil(Appareil appareil){
-        return appareils.add(appareil);
-    }
-
-    public boolean removeAppareil(Appareil appareil){
-        return appareils.remove(appareil);
-    }
 }

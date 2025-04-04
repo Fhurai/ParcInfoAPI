@@ -18,6 +18,8 @@ import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.Data;
 import org.springframework.stereotype.Service;
+
+import java.util.Arrays;
 import java.util.Optional;
 
 /**
@@ -116,6 +118,25 @@ public class PersonneService {
                 .orElseThrow(() -> new EntityNotFoundException("Appareil not found"));
 
         personne.getAppareils().remove(appareil);
+
+        // Sauvegarde la Personne (CascadeType.MERGE garantit la mise à jour de l'Appareil si nécessaire)
+        return personneRepository.save(personne);
+    }
+
+    public Personne updateAppareilsToPersonne(Long personneId,
+                                             String[] appareilsId) {
+
+        Personne personne = personneRepository.findById(personneId)
+                .orElseThrow(() -> new EntityNotFoundException("Personne not found"));
+
+        personne.getAppareils().clear();
+
+        Arrays.stream(appareilsId).forEach(appareilId -> {
+
+            Appareil appareil = appareilRepository.findById(Long.valueOf(appareilId))
+                    .orElseThrow(() -> new EntityNotFoundException("Appareil not found"));
+            personne.getAppareils().add(appareil);
+        });
 
         // Sauvegarde la Personne (CascadeType.MERGE garantit la mise à jour de l'Appareil si nécessaire)
         return personneRepository.save(personne);
