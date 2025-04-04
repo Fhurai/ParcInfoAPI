@@ -11,16 +11,14 @@
 package fr.afpa.pompey.cda17.parcInfoAPI.controllers;
 
 import fr.afpa.pompey.cda17.parcInfoAPI.models.Personne;
-import fr.afpa.pompey.cda17.parcInfoAPI.services.AppareilService;
 import fr.afpa.pompey.cda17.parcInfoAPI.services.PersonneService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+
 import java.net.URI;
-import java.util.Arrays;
 import java.util.Optional;
-import java.util.logging.Logger;
 
 /**
  * Annotation Spring indiquant que cette classe est un contrôleur REST.
@@ -94,23 +92,33 @@ public class PersonneController {
             Personne currentPersonne = personneOptional.get();
 
             // Mise à jour conditionnelle de chaque champ
-            if(!personne.getNom().isEmpty() && !personne.getNom().equals(currentPersonne.getNom())){
+            if(personne.getNom() != null
+                    && !personne.getNom().isEmpty()
+                    && !personne.getNom().equals(currentPersonne.getNom())){
                 currentPersonne.setNom(personne.getNom());
             }
 
-            if(!personne.getPrenom().isEmpty() && !personne.getPrenom().equals(currentPersonne.getPrenom())){
+            if(personne.getPrenom() != null
+                    && !personne.getPrenom().isEmpty()
+                    && !personne.getPrenom().equals(currentPersonne.getPrenom())){
                 currentPersonne.setPrenom(personne.getPrenom());
             }
 
-            if(!personne.getAdresse().isEmpty() && !personne.getAdresse().equals(currentPersonne.getAdresse())){
+            if(personne.getAdresse() != null
+                    && !personne.getAdresse().isEmpty()
+                    && !personne.getAdresse().equals(currentPersonne.getAdresse())){
                 currentPersonne.setAdresse(personne.getAdresse());
             }
 
-            if(personne.getDateNaissance() != null && !personne.getDateNaissance().equals(currentPersonne.getDateNaissance())){
+            if(personne.getDateNaissance() != null
+                    && !personne.getDateNaissance()
+                    .equals(currentPersonne.getDateNaissance())){
                 currentPersonne.setDateNaissance(personne.getDateNaissance());
             }
 
-            if(personne.getTelephone() != null && !personne.getTelephone().equals(currentPersonne.getTelephone())){
+            if(personne.getTelephone() != null
+                    && !personne.getTelephone()
+                    .equals(currentPersonne.getTelephone())){
                 currentPersonne.setTelephone(personne.getTelephone());
             }
 
@@ -125,7 +133,6 @@ public class PersonneController {
      * Supprime une personne via une requête DELETE.
      *
      * @param id Identifiant de la personne à supprimer
-     * @return Void (code 200 OK même si l'entité n'existe pas)
      */
     @DeleteMapping("/personne/{id}")
     public void deletePersonne(@PathVariable("id") long id) {
