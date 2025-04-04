@@ -159,8 +159,23 @@ public class OrdinateurController {
      * @param id L'identifiant de l'ordinateur à supprimer.
      */
     @DeleteMapping("/ordinateur/{id}")
-    public void deleteOrdinateur(@PathVariable int id) {
-        // Appelle le service pour supprimer l'ordinateur correspondant à l'id fourni
-        ordinateurService.deleteOrdinateur(id);
+    public ResponseEntity<Void> deleteOrdinateur(@PathVariable long id) {
+        try {
+            // Vérifie si l'ordinateur existe en base
+            Optional<Ordinateur> ordinateurOptional = ordinateurService.getOrdinateurById(id);
+            if (ordinateurOptional.isPresent()) {
+                // Supprime l'ordinateur via le service
+                ordinateurService.deleteOrdinateur(id);
+                // Retourne HTTP 204 (No Content) indiquant que la suppression a réussi sans contenu à renvoyer
+                return ResponseEntity.noContent().build();
+            } else {
+                // Si l'ordinateur n'existe pas, retourne HTTP 404 (Not Found)
+                return ResponseEntity.notFound().build();
+            }
+        } catch (Exception ex) {
+            // En cas d'erreur interne, retourne HTTP 500 (Internal Server Error)
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
+
 }

@@ -10,10 +10,11 @@ import lombok.Data;
 public class Appareil {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name= "idAppareil")
     private long id;
 
     @Column(name= "libelle")
     private String libelle;
+
 }

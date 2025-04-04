@@ -16,10 +16,11 @@ public class Ordinateur  {
     @Column(name = "deBureau", nullable = false)
     private Boolean deBureau;
 
-    @OneToOne(cascade = CascadeType.PERSIST)
+    @OneToOne(cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
     @MapsId
     @JoinColumn(name = "idAppareil", referencedColumnName = "idAppareil")
     private Appareil appareil;
+
 
 
 }
