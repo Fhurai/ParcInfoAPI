@@ -12,7 +12,9 @@ package fr.afpa.pompey.cda17.parcInfoAPI.models;
 
 import jakarta.persistence.*;
 import lombok.Data;
+
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 @Data
@@ -81,5 +83,5 @@ public class Personne {
      * private List<Personne> proprietaires;
      */
     @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.MERGE)
-    private List<Appareil> appareils;
+    private List<Appareil> appareils = new ArrayList<>();
 }

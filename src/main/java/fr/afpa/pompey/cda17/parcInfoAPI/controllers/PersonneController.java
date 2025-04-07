@@ -146,7 +146,7 @@ public class PersonneController {
      * @param appareilId Identifiant de l'appareil à associer
      * @return ResponseEntity<Personne> avec la personne mise à jour (code 200)
      */
-    @PutMapping("/personnes/{personneId}/appareil/{appareilId}")
+    @PutMapping("/personne/{personneId}/appareil/{appareilId}")
     public ResponseEntity<Personne> addAppareilToPersonne(
             @PathVariable Long personneId,
             @PathVariable Long appareilId
@@ -162,7 +162,7 @@ public class PersonneController {
      * @param appareilId Identifiant de l'appareil à dissocier
      * @return ResponseEntity<Personne> avec la personne mise à jour (code 200)
      */
-    @DeleteMapping("/personnes/{personneId}/appareil/{appareilId}")
+    @DeleteMapping("/personne/{personneId}/appareil/{appareilId}")
     public ResponseEntity<Personne> removeAppareilToPersonne(
             @PathVariable Long personneId,
             @PathVariable Long appareilId
@@ -179,7 +179,7 @@ public class PersonneController {
      * @param personneId Identifiant de la personne cible
      * @return ResponseEntity<Personne> avec la personne mise à jour (code 200)
      */
-    @PutMapping("/personnes/{personneId}/appareils")
+    @PutMapping("/personne/{personneId}/appareils")
     public ResponseEntity<Personne> addAppareilToPersonne(
             @RequestBody String[] appareils,
             @PathVariable Long personneId

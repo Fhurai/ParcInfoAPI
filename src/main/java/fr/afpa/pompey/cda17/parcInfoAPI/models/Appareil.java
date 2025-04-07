@@ -2,8 +2,6 @@ package fr.afpa.pompey.cda17.parcInfoAPI.models;
 
 import jakarta.persistence.*;
 import lombok.Data;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Classe entité JPA représentant un appareil dans le système.

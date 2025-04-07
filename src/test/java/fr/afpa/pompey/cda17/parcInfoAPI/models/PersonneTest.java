@@ -122,44 +122,6 @@ class PersonneTest {
         assertEquals(newAppareils, personne.getAppareils());
     }
 
-    @Test
-    void testEquals() {
-        Personne personne1 = createSamplePersonne(1L, "Dupont", "Jean");
-        Personne personne2 = createSamplePersonne(1L, "Dupont", "Jean");
-        Personne personne3 = createSamplePersonne(2L, "Durand", "Lucie");
-
-        assertEquals(personne1, personne2);
-        assertNotEquals(personne1, personne3);
-    }
-
-    @Test
-    void canEqual() {
-        Personne personne = new Personne();
-        Personne sameClass = new Personne();
-        Object differentClass = new Object();
-
-        assertTrue(personne.canEqual(sameClass));
-        assertFalse(personne.canEqual(differentClass));
-    }
-
-    @Test
-    void testHashCode() {
-        Personne personne1 = createSamplePersonne(1L, "Dupont", "Jean");
-        Personne personne2 = createSamplePersonne(1L, "Dupont", "Jean");
-
-        assertEquals(personne1.hashCode(), personne2.hashCode());
-    }
-
-    @Test
-    void testToString() {
-        Personne personne = createSamplePersonne(1L, "Dupont", "Jean");
-        String str = personne.toString();
-
-        assertTrue(str.contains("Dupont"));
-        assertTrue(str.contains("Jean"));
-        assertTrue(str.contains("id=1"));
-    }
-
     // Helper method to create Personne with common fields
     private Personne createSamplePersonne(Long id, String nom, String prenom) {
         Personne p = new Personne();

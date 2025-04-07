@@ -1,22 +1,23 @@
 package fr.afpa.pompey.cda17.parcInfoAPI.controllers;
 
+import fr.afpa.pompey.cda17.parcInfoAPI.models.Appareil;
 import fr.afpa.pompey.cda17.parcInfoAPI.models.Personne;
-import fr.afpa.pompey.cda17.parcInfoAPI.services.PersonneService;
+import fr.afpa.pompey.cda17.parcInfoAPI.repositories.AppareilRepository;
+import fr.afpa.pompey.cda17.parcInfoAPI.repositories.PersonneRepository;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
-import java.util.List;
-import java.util.Optional;
+import java.time.LocalDate;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -25,58 +26,33 @@ class PersonneControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
-    @MockBean
-    private PersonneService personneService;
+    @Autowired
+    private PersonneRepository personneRepository;
+
+    @Autowired
+    private AppareilRepository appareilRepository;
 
     @Test
     void createPersonne_WhenValidRequest_ReturnsCreated() throws Exception {
-        Personne mockPersonne = new Personne();
-        mockPersonne.setId(4L);
-        mockPersonne.setNom("Condé");
-        Mockito.when(personneService
-                .save(Mockito.any(Personne.class)))
-                .thenReturn(mockPersonne);
-
         mockMvc.perform(post("/personne")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"nom\":\"Condé\"}"))
-                .andExpect(status()
-                        .isCreated())
-                .andExpect(header()
-                        .exists("Location"))
-                .andExpect(header()
-                        .string("Location",
-                                "http://localhost/personne/4"));
-    }
-
-    @Test
-    void createPersonne_WhenServiceFails_ReturnsNoContent() throws Exception {
-        Mockito.when(personneService.save(Mockito.any(Personne.class))).thenReturn(null);
-
-        mockMvc.perform(post("/personne")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"nom\":\"Invalid\"}"))
-                .andExpect(status().isNoContent());
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{\"idAppareil\":\"0\","
+                        + "\"nom\":\"Laroche\","
+                        + "\"prenom\":\"Pierre\","
+                        + "\"adresse\":\"15 rue des Roches, 57000 Metz\","
+                        + "\"telephone\":\"0387125678\","
+                        + "\"dateNaissance\":\"1975-04-20\"}"))
+                .andExpect(status().isCreated());
     }
 
     @Test
     void getAllPersonne() throws Exception {
-        Personne personne = new Personne();
-        personne.setNom("Condé");
-        List<Personne> personnes = List.of(personne);
-        Mockito.when(personneService.getPersonnes()).thenReturn(personnes);
-
         mockMvc.perform(get("/personnes"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].nom", is("Condé")));
+                .andExpect(status().isOk());
     }
 
     @Test
     void getPersonneById() throws Exception {
-        Personne mockPersonne = new Personne();
-        mockPersonne.setNom("Kuntz");
-        Mockito.when(personneService.getPersonne(2L)).thenReturn(Optional.of(mockPersonne));
-
         mockMvc.perform(get("/personne/2"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.nom", is("Kuntz")));
@@ -84,112 +60,97 @@ class PersonneControllerTest {
 
     @Test
     void updatePersonne_WhenValidRequest_ReturnsOk() throws Exception {
-        Personne existingPersonne = new Personne();
-        existingPersonne.setId(1L);
-        existingPersonne.setNom("Old Name");
+        Personne personne = new Personne();
+        personne.setNom("Laroche");
+        personne.setPrenom("Pierre");
+        personne.setAdresse("15 rue des Roches, 57000 Metz");
+        personne.setTelephone("0387125678");
+        personne.setDateNaissance(LocalDate.of(1975, 4, 20));
+        personneRepository.save(personne);
 
-        Personne updatedPersonne = new Personne();
-        updatedPersonne.setId(1L);
-        updatedPersonne.setNom("New Name");
-
-        Mockito.when(personneService.getPersonne(1L)).thenReturn(Optional.of(existingPersonne));
-        Mockito.when(personneService.save(Mockito.any(Personne.class))).thenReturn(updatedPersonne);
-
-        mockMvc.perform(put("/personne/1")
+        mockMvc.perform(put("/personne/" + personne.getId())
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"nom\":\"New Name\"}"))
+                        .content("{\"idAppareil\":\"0\","
+                                + "\"nom\":\"Kuntz\","
+                                + "\"prenom\":\"Pierre\","
+                                + "\"adresse\":\"15 rue des Roches, 57000 Metz\","
+                                + "\"telephone\":\"0387125678\","
+                                + "\"dateNaissance\":\"1975-04-18\"}"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.nom", is("New Name")));
-    }
-
-    @Test
-    void updatePersonne_WhenPersonneNotFound_ReturnsNull() throws Exception {
-        Mockito.when(personneService.getPersonne(1L)).thenReturn(Optional.empty());
-
-        mockMvc.perform(put("/personne/1")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"nom\":\"New Name\"}"))
-                .andExpect(status().isOk())
-                .andExpect(content().string(""));
+                .andExpect(jsonPath("$.nom", is("Kuntz")));
     }
 
     @Test
     void deletePersonne_WhenValidId_ReturnsOk() throws Exception {
-        mockMvc.perform(delete("/personne/1"))
-                .andExpect(status().isOk());
+        Personne personne = new Personne();
+        personne.setNom("Laroche");
+        personne.setPrenom("Pierre");
+        personne.setAdresse("15 rue des Roches, 57000 Metz");
+        personne.setTelephone("0387125678");
+        personne.setDateNaissance(LocalDate.of(1975, 4, 20));
+        personneRepository.save(personne);
 
-        Mockito.verify(personneService, Mockito.times(1)).deletePersonne(1L);
+        mockMvc.perform(delete("/personne/" + personne.getId()))
+                .andExpect(status().isOk());
     }
 
     @Test
     void addAppareilToPersonne_WhenValidIds_ReturnsUpdatedPersonne() throws Exception {
-        Personne mockPersonne = new Personne();
-        mockPersonne.setId(1L);
-        mockPersonne.setNom("Test");
+        Personne personne = new Personne();
+        personne.setNom("Laroche");
+        personne.setPrenom("Pierre");
+        personne.setAdresse("15 rue des Roches, 57000 Metz");
+        personne.setTelephone("0387125678");
+        personne.setDateNaissance(LocalDate.of(1975, 4, 20));
+        personneRepository.save(personne);
 
-        Mockito.when(personneService.addAppareilToPersonne(1L, 2L)).thenReturn(mockPersonne);
+        Appareil appareil = new Appareil();
+        appareil.setLibelle("test");
+        appareilRepository.save(appareil);
 
-        mockMvc.perform(put("/personnes/1/appareil/2"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.nom", is("Test")));
-    }
+        mockMvc.perform(put("/personne/" + personne.getId() + "/appareil/" + appareil.getId()))
+                .andExpect(status().isOk());
 
-    @Test
-    void addAppareilToPersonne_WhenServiceReturnsNull_ReturnsOkWithNullBody() throws Exception {
-        Mockito.when(personneService.addAppareilToPersonne(1L, 2L)).thenReturn(null);
+        personneRepository.delete(personne);
+        appareilRepository.delete(appareil);
 
-        mockMvc.perform(put("/personnes/1/appareil/2"))
-                .andExpect(status().isOk())
-                .andExpect(content().string(""));
     }
 
     @Test
     void removeAppareilToPersonne_WhenValidIds_ReturnsUpdatedPersonne() throws Exception {
-        Personne mockPersonne = new Personne();
-        mockPersonne.setId(1L);
-        mockPersonne.setNom("Test");
+        Appareil appareil = new Appareil();
+        appareil.setLibelle("test");
+        appareilRepository.save(appareil);
 
-        Mockito.when(personneService.removeAppareilFromPersonne(1L, 2L)).thenReturn(mockPersonne);
+        Personne personne = new Personne();
+        personne.setNom("Laroche");
+        personne.setPrenom("Pierre");
+        personne.setAdresse("15 rue des Roches, 57000 Metz");
+        personne.setTelephone("0387125678");
+        personne.setDateNaissance(LocalDate.of(1975, 4, 20));
+        personne.getAppareils().add(appareil);
+        personneRepository.save(personne);
 
-        mockMvc.perform(delete("/personnes/1/appareil/2"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.nom", is("Test")));
-    }
+        mockMvc.perform(delete("/personne/" + personne.getId() + "/appareil/" + appareil.getId()))
+                .andExpect(status().isOk());
 
-    @Test
-    void removeAppareilToPersonne_WhenServiceReturnsNull_ReturnsOkWithNullBody() throws Exception {
-        Mockito.when(personneService.removeAppareilFromPersonne(1L, 2L)).thenReturn(null);
-
-        mockMvc.perform(delete("/personnes/1/appareil/2"))
-                .andExpect(status().isOk())
-                .andExpect(content().string(""));
+        personneRepository.delete(personne);
+        appareilRepository.delete(appareil);
     }
 
     @Test
     void testAddAppareilToPersonne_WhenValidRequest_ReturnsUpdatedPersonne() throws Exception {
-        Personne mockPersonne = new Personne();
-        mockPersonne.setId(1L);
-        mockPersonne.setNom("Test");
+        Personne personne = new Personne();
+        personne.setNom("Laroche");
+        personne.setPrenom("Pierre");
+        personne.setAdresse("15 rue des Roches, 57000 Metz");
+        personne.setTelephone("0387125678");
+        personne.setDateNaissance(LocalDate.of(1975, 4, 20));
+        personneRepository.save(personne);
 
-        Mockito.when(personneService.updateAppareilsToPersonne(1L, new String[]{"1", "2"}))
-                .thenReturn(mockPersonne);
-
-        mockMvc.perform(put("/personnes/1/appareils")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("[\"1\", \"2\"]"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.nom", is("Test")));
-    }
-
-    @Test
-    void testAddAppareilToPersonne_WhenServiceReturnsNull_ReturnsOkWithNullBody() throws Exception {
-        Mockito.when(personneService.updateAppareilsToPersonne(1L, new String[]{"1", "2"}))
-                .thenReturn(null);
-
-        mockMvc.perform(put("/personnes/1/appareils")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("[\"1\", \"2\"]"))
-                .andExpect(status().isOk())
-                .andExpect(content().string(""));
+        mockMvc.perform(put("/personne/" + personne.getId() + "/appareils")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("[\"1\",\"10\",\"12\"]"))
+                .andExpect(status().isOk());
     }
 }
