@@ -2,6 +2,7 @@ package fr.afpa.pompey.cda17.parcInfoAPI.models;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 /**
  * Classe entité JPA représentant un appareil dans le système.
@@ -14,6 +15,7 @@ import lombok.Data;
  * @version 1.0
  */
 @Data // Génère automatiquement getters, setters, equals, hashCode et toString
+@NoArgsConstructor // Génère un constructeur sans arguments
 @Entity // Indique que cette classe est une entité persistante JPA
 @Table(name = "appareils") // Spécifie le nom de la table en base de données
 public class Appareil {
