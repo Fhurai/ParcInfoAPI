@@ -20,4 +20,6 @@ public class Smartphone {
     @MapsId
     @JoinColumn( name = "idAppareil", referencedColumnName = "idAppareil")
     private Appareil appareil;
+
+
 }
