@@ -6,7 +6,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import java.net.URI;
 import java.util.Optional;
 
 /**
@@ -40,19 +42,23 @@ public class OrdinateurController {
      */
     @PostMapping("/ordinateur")
     public ResponseEntity<Ordinateur> createOrdinateur(@RequestBody Ordinateur ordinateur) {
-        // Vérifie que l'objet ne contient pas d'identifiant déjà défini (la valeur par défaut est ici 0)
-        // HTTP 400 (Bad Request) est retourné si l'id est défini par le client, car il ne doit pas être précisé
         if (ordinateur.getAppareil().getId() != 0) {
-            // Le client ne devrait pas définir l'id, on retourne une réponse 400 Bad Request
             return ResponseEntity.badRequest().build();
         }
 
-        // Sauvegarde l'objet Ordinateur dans la base de données
-        Ordinateur savedOrdinateur = ordinateurService.saveOrdinateur(ordinateur);
+        Ordinateur current = ordinateurService.saveOrdinateur(ordinateur);
 
-        // Retourne l'objet sauvegardé avec un statut HTTP 200 (OK)
-        // Le code 200 indique que la requête a réussi et que la réponse contient le résultat attendu
-        return ResponseEntity.ok(savedOrdinateur);
+        if(current == null) {
+            return ResponseEntity.noContent().build();
+        } else{
+            URI location = ServletUriComponentsBuilder
+                    .fromCurrentRequest()
+                    .path("/{id}")
+                    .buildAndExpand(current.getIdAppareil())
+                    .toUri();
+
+            return ResponseEntity.created(location).build();
+        }
     }
 
 
@@ -84,7 +90,7 @@ public class OrdinateurController {
      * @return Une {@link ResponseEntity} contenant l'objet {@link Ordinateur} ou une réponse 404.
      */
     @GetMapping("/ordinateur/{id}")
-    public ResponseEntity<Ordinateur> getOrdinateur(@PathVariable  long id) {
+    public ResponseEntity<Ordinateur> getOrdinateur(@PathVariable("id")  long id) {
         try {
             // Tente de récupérer l'ordinateur correspondant à l'id fourni
             Optional<Ordinateur> ordinateur = ordinateurService.getOrdinateurById(id);
