@@ -31,15 +31,10 @@ public class AppareilService<T extends Appareil> {
     @Autowired
     private AppareilRepository appareilRepository;
 
-    /**
-     * Recherche un appareil en fonction de son libellé.
-     * <p>
-     * Utilise la méthode {@link AppareilRepository#getAppareilByLibelle(String)} pour récupérer l'appareil correspondant.
-     * </p>
-     *
-     * @param libelle le libellé de l'appareil recherché.
-     * @return un {@link Optional} contenant l'appareil si trouvé, sinon un {@link Optional#empty()}.
-     */
+    public AppareilService(AppareilRepository appareilRepository) {
+        this.appareilRepository = appareilRepository;
+    }
+
     public Optional<Appareil> findByLibelle(String libelle) {
         // Recherche de l'appareil par libellé via le repository
         return appareilRepository.getAppareilByLibelle(libelle);

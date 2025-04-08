@@ -26,14 +26,11 @@ public class AppareilController {
     private AppareilService appareilService;
 
     /**
-     * Crée un nouvel appareil.
-     * <p>
-     * Endpoint HTTP POST qui permet de sauvegarder un nouvel objet {@link Appareil}.
-     * Le corps de la requête doit contenir les informations de l'appareil.
-     * </p>
+     * Crée un nouvel appareil en base de données.
      *
-     * @param appareil l'objet {@link Appareil} à créer.
-     * @return l'objet {@link Appareil} créé après sauvegarde.
+     * @param appareil Objet Appareil reçu au format JSON dans le corps de la requête.
+     *                 Doit contenir les champs nécessaires à la création.
+     * @return L'appareil créé avec son identifiant généré.
      */
     @PostMapping("/appareil")
     public Appareil createAppareil(@RequestBody Appareil appareil) {
@@ -42,12 +39,10 @@ public class AppareilController {
     }
 
     /**
-     * Récupère la liste de tous les appareils enregistrés.
-     * <p>
-     * Endpoint HTTP GET qui renvoie un {@link Iterable} de tous les {@link Appareil} existants.
-     * </p>
+     * Récupère la liste de tous les appareils existants.
      *
-     * @return un {@link Iterable} contenant l'ensemble des {@link Appareil}.
+     * @return Un Iterable contenant tous les appareils en base de données.
+     *         Retourne une liste vide si aucun résultat.
      */
     @GetMapping("/appareils")
     public Iterable<Appareil> getAllAppareil() {
@@ -56,14 +51,10 @@ public class AppareilController {
     }
 
     /**
-     * Récupère un appareil en fonction de son identifiant.
-     * <p>
-     * Endpoint HTTP GET qui permet de récupérer un {@link Appareil} selon son ID.
-     * Si l'appareil n'est pas trouvé, {@code null} est retourné.
-     * </p>
+     * Recherche un appareil par son identifiant unique.
      *
-     * @param id l'identifiant de l'appareil à récupérer.
-     * @return l'objet {@link Appareil} correspondant ou {@code null} si non trouvé.
+     * @param id Identifiant de l'appareil (passé dans l'URL).
+     * @return L'appareil correspondant à l'ID, ou null si non trouvé.
      */
     @GetMapping("/appareil/{id}")
     public Appareil getAppareilById(@PathVariable("id") long id) {
@@ -74,15 +65,13 @@ public class AppareilController {
     }
 
     /**
-     * Met à jour les informations d'un appareil existant.
-     * <p>
-     * Endpoint HTTP PUT qui permet de modifier le {@code libelle} d'un {@link Appareil}.
-     * Si l'appareil n'est pas trouvé, {@code null} est retourné.
-     * </p>
+     * Met à jour partiellement un appareil existant.
+     * Seul le libellé peut être modifié dans cette implémentation.
      *
-     * @param id       l'identifiant de l'appareil à mettre à jour.
-     * @param appareil l'objet {@link Appareil} contenant les nouvelles informations.
-     * @return l'objet {@link Appareil} mis à jour ou {@code null} si l'appareil n'existe pas.
+     * @param id        Identifiant de l'appareil à mettre à jour.
+     * @param appareil  Objet Appareil contenant les nouvelles valeurs.
+     *                  Seul le champ 'libelle' est pris en compte.
+     * @return L'appareil mis à jour, ou null si l'ID n'existe pas.
      */
     @PutMapping("/appareil/{id}")
     public Appareil updateAppareil(@PathVariable("id") long id,
@@ -111,12 +100,10 @@ public class AppareilController {
     }
 
     /**
-     * Supprime un appareil en fonction de son identifiant.
-     * <p>
-     * Endpoint HTTP DELETE qui supprime le {@link Appareil} correspondant à l'ID fourni.
-     * </p>
+     * Supprime définitivement un appareil par son identifiant.
      *
-     * @param id l'identifiant de l'appareil à supprimer.
+     * @param id Identifiant de l'appareil à supprimer.
+     *           Aucune action si l'ID n'existe pas.
      */
     @DeleteMapping("/appareil/{id}")
     public void deleteAppareil(@PathVariable("id") long id) {
