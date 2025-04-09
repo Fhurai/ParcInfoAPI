@@ -1,8 +1,15 @@
 package fr.afpa.pompey.cda17.parcInfoAPI.models;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Classe entité JPA représentant un appareil dans le système.
@@ -17,6 +24,9 @@ import lombok.NoArgsConstructor;
 @Data // Génère automatiquement getters, setters, equals, hashCode et toString
 @NoArgsConstructor // Génère un constructeur sans arguments
 @Entity // Indique que cette classe est une entité persistante JPA
+@JsonIdentityInfo(
+        generator = ObjectIdGenerators.PropertyGenerator.class,
+        property = "id")
 @Table(name = "appareils") // Spécifie le nom de la table en base de données
 public class Appareil {
 
@@ -46,4 +56,7 @@ public class Appareil {
             length = 30 // Taille maximale en base de données
     )
     private String libelle;
+
+    @ManyToMany(mappedBy = "appareils", fetch = FetchType.LAZY)
+    private List<Personne> proprietaires = new ArrayList<>();
 }
