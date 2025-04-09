@@ -24,9 +24,6 @@ import java.util.List;
 @Data // Génère automatiquement getters, setters, equals, hashCode et toString
 @NoArgsConstructor // Génère un constructeur sans arguments
 @Entity // Indique que cette classe est une entité persistante JPA
-@JsonIdentityInfo(
-        generator = ObjectIdGenerators.PropertyGenerator.class,
-        property = "id")
 @Table(name = "appareils") // Spécifie le nom de la table en base de données
 public class Appareil {
 
@@ -58,5 +55,6 @@ public class Appareil {
     private String libelle;
 
     @ManyToMany(mappedBy = "appareils", fetch = FetchType.LAZY)
+    @JsonBackReference
     private List<Personne> proprietaires = new ArrayList<>();
 }

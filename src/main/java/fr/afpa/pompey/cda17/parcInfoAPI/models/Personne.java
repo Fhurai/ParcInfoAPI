@@ -85,5 +85,6 @@ public class Personne {
      * private List<Personne> proprietaires;
      */
     @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
+    @JsonManagedReference
     private List<Appareil> appareils = new ArrayList<>();
 }
