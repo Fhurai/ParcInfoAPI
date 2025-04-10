@@ -1,3 +1,3 @@
 #!/bin/bash
 
-mvn spring-boot:run
+clear && mvn test spring-boot:run
