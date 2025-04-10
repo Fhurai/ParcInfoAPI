@@ -10,6 +10,8 @@
  */
 package fr.afpa.pompey.cda17.parcInfoAPI.models;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -82,6 +84,7 @@ public class Personne {
      * @ManyToMany(mappedBy = "appareils")
      * private List<Personne> proprietaires;
      */
-    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.MERGE)
+    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
+    @JsonBackReference
     private List<Appareil> appareils = new ArrayList<>();
 }

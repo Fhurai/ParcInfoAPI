@@ -105,6 +105,7 @@ public class PersonneService {
 
         // Ajoute l'Appareil à la collection de la Personne (côté maître de la relation ManyToMany)
         personne.getAppareils().add(appareil);
+        appareil.getProprietaires().add(personne);
 
         // Sauvegarde la Personne (CascadeType.MERGE garantit la mise à jour de l'Appareil si nécessaire)
         return personneRepository.save(personne);
@@ -118,6 +119,7 @@ public class PersonneService {
                 .orElseThrow(() -> new EntityNotFoundException("Appareil not found"));
 
         personne.getAppareils().remove(appareil);
+        appareil.getProprietaires().remove(personne);
 
         // Sauvegarde la Personne (CascadeType.MERGE garantit la mise à jour de l'Appareil si nécessaire)
         return personneRepository.save(personne);
@@ -129,12 +131,16 @@ public class PersonneService {
         Personne personne = personneRepository.findById(personneId)
                 .orElseThrow(() -> new EntityNotFoundException("Personne not found"));
 
+        personne.getAppareils().forEach(appareil -> {
+            appareil.getProprietaires().remove(personne);
+        });
         personne.getAppareils().clear();
 
-        Arrays.stream(appareilsId).forEach(appareilId -> {
-
-            Appareil appareil = appareilRepository.findById(Long.valueOf(appareilId))
-                    .orElseThrow(() -> new EntityNotFoundException("Appareil not found"));
+        Arrays.stream(appareilsId).forEach(id -> {
+            Appareil appareil = appareilRepository.findById(Long.valueOf(id))
+                    .orElseThrow(() -> new EntityNotFoundException("Appareil " +
+                            "not found"));
+            appareil.getProprietaires().add(personne);
             personne.getAppareils().add(appareil);
         });
 
