@@ -85,6 +85,10 @@ public class Personne {
      * private List<Personne> proprietaires;
      */
     @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
+    /**
+     * Annotation utilisée pour éviter les boucles infinies lors de la sérialisation JSON.
+     * Elle indique que cette relation est la "partie inverse" dans une relation bidirectionnelle.
+     */
     @JsonBackReference
     private List<Appareil> appareils = new ArrayList<>();
 }

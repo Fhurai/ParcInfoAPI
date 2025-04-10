@@ -74,7 +74,9 @@ public class PersonneController {
      */
     @GetMapping("/personne/{id}")
     public Personne getPersonneById(@PathVariable("id") long id){
+        // Fetch the person by ID from the service layer
         Optional<Personne> personne = personneService.getPersonne(id);
+        // Return the person if found, otherwise return null
         return personne.orElse(null);
     }
 
@@ -87,44 +89,53 @@ public class PersonneController {
      */
     @PutMapping("/personne/{id}")
     public Personne updatePersonne(@RequestBody Personne personne, @PathVariable("id") long id) {
+        // Retrieve the existing person by ID
         Optional<Personne> personneOptional = personneService.getPersonne(id);
         if (personneOptional.isPresent()) {
+            // If the person exists, get the current person object
             Personne currentPersonne = personneOptional.get();
 
-            // Mise à jour conditionnelle de chaque champ
+            // Update the 'nom' field if the new value is not null, not empty, and different
             if(personne.getNom() != null
                     && !personne.getNom().isEmpty()
                     && !personne.getNom().equals(currentPersonne.getNom())){
                 currentPersonne.setNom(personne.getNom());
             }
 
+            // Update the 'prenom' field if the new value is not null, not empty, and different
             if(personne.getPrenom() != null
                     && !personne.getPrenom().isEmpty()
                     && !personne.getPrenom().equals(currentPersonne.getPrenom())){
                 currentPersonne.setPrenom(personne.getPrenom());
             }
 
+            // Update the 'adresse' field if the new value is not null, not empty, and different
             if(personne.getAdresse() != null
                     && !personne.getAdresse().isEmpty()
                     && !personne.getAdresse().equals(currentPersonne.getAdresse())){
                 currentPersonne.setAdresse(personne.getAdresse());
             }
 
+            // Update the 'dateNaissance' field if the new value is not null and different
             if(personne.getDateNaissance() != null
                     && !personne.getDateNaissance()
                     .equals(currentPersonne.getDateNaissance())){
                 currentPersonne.setDateNaissance(personne.getDateNaissance());
             }
 
+            // Update the 'telephone' field if the new value is not null and different
             if(personne.getTelephone() != null
                     && !personne.getTelephone()
                     .equals(currentPersonne.getTelephone())){
                 currentPersonne.setTelephone(personne.getTelephone());
             }
 
+            // Save the updated person object back to the service layer
             personneService.save(currentPersonne);
+            // Return the updated person object
             return currentPersonne;
         } else {
+            // If the person does not exist, return null
             return null;
         }
     }
