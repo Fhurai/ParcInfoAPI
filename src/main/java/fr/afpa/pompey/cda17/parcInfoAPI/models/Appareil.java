@@ -52,6 +52,5 @@ public class Appareil {
     private String libelle;
 
     @ManyToMany(mappedBy = "appareils", fetch = FetchType.LAZY)
-    @JsonBackReference
     private List<Personne> proprietaires = new ArrayList<>();
 }
