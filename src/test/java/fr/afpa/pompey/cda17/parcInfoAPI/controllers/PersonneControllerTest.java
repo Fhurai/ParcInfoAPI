@@ -17,7 +17,6 @@ import java.time.LocalDate;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -51,13 +50,68 @@ class PersonneControllerTest {
         Appareil appareil = new Appareil();
         appareil.setLibelle("test");
         savedAppareil = appareilRepository.save(appareil);
+
+        // Link the savedAppareil to the savedPersonne for testing
+        savedPersonne.getAppareils().add(savedAppareil);
+        savedPersonne = personneRepository.save(savedPersonne);
+
+        // Create additional Appareil entities for testing
+        Appareil appareil1 = new Appareil();
+        appareil1.setLibelle("Appareil 1");
+        appareilRepository.save(appareil1);
+
+        Appareil appareil10 = new Appareil();
+        appareil10.setLibelle("Appareil 10");
+        appareilRepository.save(appareil10);
+
+        Appareil appareil12 = new Appareil();
+        appareil12.setLibelle("Appareil 12");
+        appareilRepository.save(appareil12);
     }
 
     @AfterEach
     void tearDown() {
-        // Clean up after each test to avoid side effects
-        if (savedPersonne != null) personneRepository.delete(savedPersonne);
-        if (savedAppareil != null) appareilRepository.delete(savedAppareil);
+        if (this.savedPersonne != null && personneRepository.existsById(this.savedPersonne.getId())) {
+            try {
+                // Clear associations and save changes
+                this.savedPersonne.getAppareils().clear();
+                this.personneRepository.saveAndFlush(this.savedPersonne);
+
+                // Delete the Personne entity
+                this.personneRepository.deleteById(this.savedPersonne.getId());
+                this.personneRepository.flush();
+            } catch (Exception e) {
+                System.err.println("Error during tearDown for Personne: " + e.getMessage());
+            }
+        }
+
+        if (this.savedAppareil != null && appareilRepository.existsById(this.savedAppareil.getId())) {
+            try {
+                // Delete the Appareil entity
+                this.appareilRepository.deleteById(this.savedAppareil.getId());
+                this.appareilRepository.flush();
+            } catch (Exception e) {
+                System.err.println("Error during tearDown for Appareil: " + e.getMessage());
+            }
+        }
+
+        // Delete additional Appareil entities created during setup
+        deleteAppareilByLibelle("Appareil 1");
+        deleteAppareilByLibelle("Appareil 10");
+        deleteAppareilByLibelle("Appareil 12");
+    }
+
+    private void deleteAppareilByLibelle(String libelle) {
+        appareilRepository.getAppareilByLibelle(libelle).ifPresent(appareil -> {
+            if (appareilRepository.existsById(appareil.getId())) {
+                try {
+                    appareilRepository.deleteById(appareil.getId());
+                    appareilRepository.flush();
+                } catch (Exception e) {
+                    System.err.println("Error during tearDown for Appareil with libelle " + libelle + ": " + e.getMessage());
+                }
+            }
+        });
     }
 
     @Test
@@ -121,9 +175,17 @@ class PersonneControllerTest {
 
     @Test
     void testAddAppareilToPersonne_WhenValidRequest_ReturnsUpdatedPersonne() throws Exception {
+        // Ensure the Appareil entities exist before running the test
+        Appareil appareil1 = appareilRepository.getAppareilByLibelle("Appareil 1").orElseThrow(() -> new RuntimeException("Appareil 1 not found"));
+        Appareil appareil10 = appareilRepository.getAppareilByLibelle("Appareil 10").orElseThrow(() -> new RuntimeException("Appareil 10 not found"));
+        Appareil appareil12 = appareilRepository.getAppareilByLibelle("Appareil 12").orElseThrow(() -> new RuntimeException("Appareil 12 not found"));
+
         mockMvc.perform(put("/personne/" + savedPersonne.getId() + "/appareils")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content("[\"1\",\"10\",\"12\"]"))
+                        .content("[\"" + appareil1.getId() + "\",\"" + appareil10.getId() + "\",\"" + appareil12.getId() + "\"]"))
                 .andExpect(status().isOk());
+
+        this.savedPersonne.getAppareils().clear();
+        this.personneRepository.save(this.savedPersonne);
     }
 }
