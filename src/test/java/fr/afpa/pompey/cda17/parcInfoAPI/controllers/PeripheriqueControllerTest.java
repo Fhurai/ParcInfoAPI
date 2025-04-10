@@ -1,5 +1,6 @@
 package fr.afpa.pompey.cda17.parcInfoAPI.controllers;
 
+import fr.afpa.pompey.cda17.parcInfoAPI.models.Appareil;
 import fr.afpa.pompey.cda17.parcInfoAPI.models.Peripherique;
 import fr.afpa.pompey.cda17.parcInfoAPI.models.TypePeripherique;
 import fr.afpa.pompey.cda17.parcInfoAPI.repositories.PeripheriqueRepository;
@@ -33,6 +34,7 @@ class PeripheriqueControllerTest {
     void setup() {
         // Create and save a peripherique for testing purposes
         Peripherique peripherique = new Peripherique();
+        peripherique.setAppareil(new Appareil());
         peripherique.getAppareil().setLibelle("Clavier");
         peripherique.setType(TypePeripherique.CLAVIER);
         savedPeripherique = peripheriqueRepository.save(peripherique);
@@ -48,7 +50,8 @@ class PeripheriqueControllerTest {
     void createPeripherique_WhenValidRequest_ReturnsCreated() throws Exception {
         mockMvc.perform(post("/peripherique")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"libelle\":\"Souris\"}"))
+                        .content("{\"type\":\"SOURIS\", " +
+                                "\"appareil\":{\"libelle\": \"\"}}"))
                 .andExpect(status().isCreated());
     }
 
@@ -62,16 +65,17 @@ class PeripheriqueControllerTest {
     void getPeripheriqueById() throws Exception {
         mockMvc.perform(get("/peripherique/" + savedPeripherique.getIdAppareil()))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.libelle", is("Clavier")));
+                .andExpect(jsonPath("$.appareil.libelle", is("Clavier")));
     }
 
     @Test
     void updatePeripherique_WhenValidRequest_ReturnsOk() throws Exception {
         mockMvc.perform(put("/peripherique/" + savedPeripherique.getIdAppareil())
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"libelle\":\"Souris\"}"))
+                        .content("{\"type\":\"CLAVIER\", " +
+                                "\"appareil\":{\"libelle\": \"Souris\"}}"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.libelle", is("Souris")));
+                .andExpect(jsonPath("$.appareil.libelle", is("Souris")));
     }
 
     @Test

@@ -5,7 +5,9 @@ import fr.afpa.pompey.cda17.parcInfoAPI.services.PeripheriqueService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import java.net.URI;
 import java.util.Optional;
 
 @RestController
@@ -15,8 +17,20 @@ public class PeripheriqueController {
     private PeripheriqueService peripheriqueService;
 
     @PostMapping("/peripherique")
-    public Peripherique createPeripherique(@RequestBody Peripherique peripherique) {
-        return peripheriqueService.save(peripherique);
+    public ResponseEntity<Peripherique> createPeripherique(@RequestBody Peripherique peripherique) {
+        Peripherique current = peripheriqueService.save(peripherique);
+
+        if(current == null) {
+            return ResponseEntity.noContent().build();
+        }else{
+            URI location = ServletUriComponentsBuilder
+                    .fromCurrentRequest()
+                    .path("/{id}")
+                    .buildAndExpand(current.getIdAppareil())
+                    .toUri();
+
+            return ResponseEntity.created(location).build();
+        }
     }
 
     @GetMapping("/peripheriques")
