@@ -1,7 +1,7 @@
 spring.application.name=parcInfoAPI
 
-#port par d√©faut
-server.address=8082
+#port par dÈfaut
+server.port=8082
 
 #niveau de level logging
 logging.level.root=error
@@ -22,8 +22,8 @@ spring.datasource.username=root
 spring.datasource.password=root
 spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver
 
-#modifie la base de donn√©es en fonction des entity pour le mode d√©veloppement
-#en production, remettre √† none
+#modifie la base de donn√©es en fonction des entity pour le mode dÈveloppement
+#en production, remettre ‡ none
 spring.jpa.hibernate.ddl-auto=update
 
 #hibernate
