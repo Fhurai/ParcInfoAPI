@@ -1,3 +1,4 @@
+package fr.afpa.pompey.cda17.parcInfoAPI.repositories;
 /**
  * Interface de repository pour l'entité Personne.
  * <p>
@@ -8,10 +9,10 @@
  * @author Pompey CDA17
  * @version 1.0
  */
-package fr.afpa.pompey.cda17.parcInfoAPI.repositories;
 
 import fr.afpa.pompey.cda17.parcInfoAPI.models.Personne;
-import org.springframework.data.repository.CrudRepository;
+
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 /**
@@ -19,7 +20,7 @@ import org.springframework.stereotype.Repository;
  * Elle active la traduction automatique des exceptions de persistence.
  */
 @Repository
-public interface PersonneRepository extends CrudRepository<Personne, Long> {
+public interface PersonneRepository extends JpaRepository<Personne, Long> {
 
     /**
      * Hérite automatiquement des opérations CRUD standards :
