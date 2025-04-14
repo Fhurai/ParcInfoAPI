@@ -9,14 +9,8 @@ import org.springframework.stereotype.Service;
 import java.util.Optional;
 
 /**
- * Service pour la gestion des entités {@link Appareil}.
- * <p>
- * Cette classe encapsule la logique métier relative aux opérations sur les appareils,
- * telles que la recherche par libellé, la récupération, la sauvegarde et la suppression d'appareils.
- * Elle utilise le {@link AppareilRepository} pour interagir avec la base de données.
- * </p>
- *
- * @param <T> un type qui étend {@link Appareil}
+ * Service class for managing Appareil entities.
+ * Provides methods for CRUD operations and custom queries.
  */
 @Data
 @Service
@@ -31,23 +25,28 @@ public class AppareilService<T extends Appareil> {
     @Autowired
     private AppareilRepository appareilRepository;
 
+    /**
+     * Constructor to initialize the AppareilRepository.
+     * @param appareilRepository Repository for Appareil entities.
+     */
     public AppareilService(AppareilRepository appareilRepository) {
         this.appareilRepository = appareilRepository;
     }
 
+    /**
+     * Finds an Appareil by its libelle.
+     * @param libelle The libelle of the Appareil.
+     * @return An Optional containing the Appareil if found, or empty if not found.
+     */
     public Optional<Appareil> findByLibelle(String libelle) {
         // Recherche de l'appareil par libellé via le repository
         return appareilRepository.getAppareilByLibelle(libelle);
     }
 
     /**
-     * Récupère un appareil en fonction de son identifiant.
-     * <p>
-     * Utilise la méthode {@link AppareilRepository#findById(Object)} pour trouver l'appareil.
-     * </p>
-     *
-     * @param id l'identifiant de l'appareil.
-     * @return un {@link Optional} contenant l'appareil si présent, sinon un {@link Optional#empty()}.
+     * Retrieves an Appareil by its ID.
+     * @param id The ID of the Appareil.
+     * @return An Optional containing the Appareil if found, or empty if not found.
      */
     public Optional<Appareil> getAppareil(long id) {
         // Recherche d'un appareil par son ID dans le repository
@@ -55,12 +54,8 @@ public class AppareilService<T extends Appareil> {
     }
 
     /**
-     * Récupère la liste de tous les appareils.
-     * <p>
-     * Utilise la méthode {@link AppareilRepository#findAll()} pour obtenir l'ensemble des appareils.
-     * </p>
-     *
-     * @return un {@link Iterable} contenant tous les appareils.
+     * Retrieves all Appareil entities.
+     * @return An Iterable containing all Appareil entities.
      */
     public Iterable<Appareil> getAppareils() {
         // Retourne tous les appareils trouvés dans la base de données via le repository
@@ -68,26 +63,17 @@ public class AppareilService<T extends Appareil> {
     }
 
     /**
-     * Supprime un appareil en fonction de son identifiant.
-     * <p>
-     * Utilise la méthode {@link AppareilRepository#deleteById(Object)} pour supprimer l'appareil correspondant.
-     * </p>
-     *
-     * @param id l'identifiant de l'appareil à supprimer.
+     * Deletes an Appareil by its ID.
+     * @param id The ID of the Appareil to delete.
      */
-    public void deleteAppareil(long id) {
-        // Supprime l'appareil correspondant à l'ID fourni via le repository
+    public void deleteAppareil(long id){
         appareilRepository.deleteById(id);
     }
 
     /**
-     * Sauvegarde ou met à jour un appareil.
-     * <p>
-     * Utilise la méthode {@link AppareilRepository#save(Object)} pour persister l'appareil dans la base de données.
-     * </p>
-     *
-     * @param appareil l'appareil à sauvegarder ou à mettre à jour.
-     * @return l'appareil sauvegardé, avec son identifiant éventuellement généré.
+     * Saves or updates an Appareil entity.
+     * @param appareil The Appareil entity to save or update.
+     * @return The saved or updated Appareil entity.
      */
     public Appareil save(Appareil appareil) {
         // Enregistre l'appareil dans la base de données via le repository

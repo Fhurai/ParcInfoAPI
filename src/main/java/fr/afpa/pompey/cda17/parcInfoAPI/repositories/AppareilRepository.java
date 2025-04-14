@@ -11,7 +11,8 @@
 package fr.afpa.pompey.cda17.parcInfoAPI.repositories;
 
 import fr.afpa.pompey.cda17.parcInfoAPI.models.Appareil;
-import org.springframework.data.repository.CrudRepository;
+
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
@@ -21,7 +22,7 @@ import java.util.Optional;
  * Elle active la traduction automatique des exceptions de persistence.
  */
 @Repository
-public interface AppareilRepository extends CrudRepository<Appareil, Long> {
+public interface AppareilRepository extends JpaRepository<Appareil, Long> {
     /**
      * Hérite automatiquement des opérations CRUD standards :
      * <ul>
