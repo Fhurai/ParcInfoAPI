@@ -7,9 +7,21 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Optional;
 
+/**
+ * Contrôleur REST pour la gestion des appareils dans l'API ParcInfo.
+ * <p>
+ * Ce contrôleur expose des endpoints pour créer, récupérer, mettre à jour et supprimer
+ * des objets {@link Appareil}. Il utilise le service {@link AppareilService} pour accéder
+ * à la logique métier et aux opérations de persistance.
+ * </p>
+ */
 @RestController
 public class AppareilController {
 
+    /**
+     * Service chargé de gérer les opérations sur les entités {@link Appareil}.
+     * Il est injecté automatiquement par Spring grâce à l'annotation {@code @Autowired}.
+     */
     @Autowired
     private AppareilService appareilService;
 
@@ -22,6 +34,7 @@ public class AppareilController {
      */
     @PostMapping("/appareil")
     public Appareil createAppareil(@RequestBody Appareil appareil) {
+        // Sauvegarde l'appareil en base de données via le service
         return appareilService.save(appareil);
     }
 
@@ -33,6 +46,7 @@ public class AppareilController {
      */
     @GetMapping("/appareils")
     public Iterable<Appareil> getAllAppareil() {
+        // Appel au service pour obtenir la liste de tous les appareils
         return appareilService.getAppareils();
     }
 
@@ -72,12 +86,14 @@ public class AppareilController {
 
             // Met à jour le champ 'libelle' si une nouvelle valeur est fournie
             String libelle = appareil.getLibelle();
-            if(libelle != null) {
+            if (libelle != null) {
+                // Met à jour le libellé de l'appareil
                 current.setLibelle(libelle);
             }
 
             // Sauvegarde les modifications en base de données
             appareilService.save(current);
+            // Retourne l'appareil mis à jour
             return current;
         } else {
             // Retourne null si l'appareil n'existe pas
