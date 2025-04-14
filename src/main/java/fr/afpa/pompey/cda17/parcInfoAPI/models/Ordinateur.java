@@ -49,5 +49,7 @@ public class Ordinateur  {
     @MapsId
     @JoinColumn(name = "idAppareil", referencedColumnName = "idAppareil")
     private Appareil appareil;
+
+
 }
 
