@@ -3,6 +3,7 @@ package fr.afpa.pompey.cda17.parcInfoAPI.controllers;
 import fr.afpa.pompey.cda17.parcInfoAPI.models.Smartphone;
 import fr.afpa.pompey.cda17.parcInfoAPI.services.SmartphoneService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -37,7 +38,7 @@ public class SmartphoneController {
         return smartphoneService.findAll();
     }
 
-    @GetMapping("/smartphone/{id}")
+    /*@GetMapping("/smartphone/{id}")
     public Smartphone getSmartphoneById(@PathVariable("id") long id) {
         Optional<Smartphone> smartphone = smartphoneService.findById(id);
         if(smartphone.isPresent()) {
@@ -46,20 +47,55 @@ public class SmartphoneController {
             return null;
         }
     }
-    /*@PutMapping("/smattphone/{id}")
+
+     */
+
+    @GetMapping("/smartphone/{idAppareil}")
+    public ResponseEntity<Smartphone> getSmartphoneByIdAppareil(@PathVariable("id") long idAppareil) {
+        Optional<Smartphone> smartphone = smartphoneService.findById(idAppareil);  // Méthode personnalisée dans le repository
+        if (smartphone.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+        return ResponseEntity.ok(smartphone.get());
+    }
+
+    @PutMapping("/smartphone/{id}")
     public ResponseEntity<Smartphone> updateSmartphone(@PathVariable("id") long id, @RequestBody Smartphone smartphone) {
-        try{
      //Recuperer le smatphone existant grace a l'id
      Optional<Smartphone> s = smartphoneService.findById(id);
      if(s.isPresent()) {
      //si le smartphone existe on recupere l'objet courant
-         Smartphone current = s.get();
+         Smartphone existing = s.get();
      //mettre a jour le champ estSmartphone
-     current.setEstSmartphone(smartphone.getEstSmartphone());
+     existing.setEstSmartphone(smartphone.isEstSmartphone());
+     //mettre a jour le lib de l'appareil
+         if(smartphone.getAppareil() != null && smartphone.getAppareil().getLibelle() != null) {
+             existing.getAppareil().setLibelle(smartphone.getAppareil().getLibelle());
+         }
+     //Sauvegarde en base
+     Smartphone updated = smartphoneService.saveSmartphone(existing);
+     //Retourne 200 ok avec l'objet mis a jour
+     return ResponseEntity.ok(updated);
+     }
+     else{
+         //retourne 404 si l'objet n'existe pas
+         return ResponseEntity.notFound().build();
      }
     }
 
-     */
 
+    @DeleteMapping("/smartphone/{id}")
+    public ResponseEntity<Void> deleteSmartphone(@PathVariable("id") long id) {
+        Optional<Smartphone> smartOptional = smartphoneService.findById(id);
+        if (smartOptional.isPresent()) {
+            smartphoneService.deleteSmartphone(id);
+            return ResponseEntity.noContent().build();
+        }
+        else {
+            return ResponseEntity.notFound().build();
+        }
+
+
+    }
 
 }
