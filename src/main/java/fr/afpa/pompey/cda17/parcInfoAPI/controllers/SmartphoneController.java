@@ -38,20 +38,8 @@ public class SmartphoneController {
         return smartphoneService.findAll();
     }
 
-    /*@GetMapping("/smartphone/{id}")
-    public Smartphone getSmartphoneById(@PathVariable("id") long id) {
-        Optional<Smartphone> smartphone = smartphoneService.findById(id);
-        if(smartphone.isPresent()) {
-            return smartphone.get();
-        }else {
-            return null;
-        }
-    }
-
-     */
-
     @GetMapping("/smartphone/{idAppareil}")
-    public ResponseEntity<Smartphone> getSmartphoneByIdAppareil(@PathVariable("id") long idAppareil) {
+    public ResponseEntity<Smartphone> getSmartphoneByIdAppareil(@PathVariable("idAppareil") long idAppareil) {
         Optional<Smartphone> smartphone = smartphoneService.findById(idAppareil);  // Méthode personnalisée dans le repository
         if (smartphone.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
@@ -94,8 +82,6 @@ public class SmartphoneController {
         else {
             return ResponseEntity.notFound().build();
         }
-
-
     }
 
 }

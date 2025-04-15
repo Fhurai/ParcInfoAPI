@@ -30,11 +30,9 @@ public class SmartphoneService {
         return smartphoneRepository.save(smartphone);
     }
 
-    /*public Smartphone update(Smartphone smartphone) {
+    public Smartphone update(Smartphone smartphone) {
         return smartphoneRepository.save(smartphone);
     }
-
-     */
 
     public void deleteSmartphone(Long id) {
         smartphoneRepository.deleteById(id);

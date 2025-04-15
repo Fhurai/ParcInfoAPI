@@ -5,7 +5,6 @@ import fr.afpa.pompey.cda17.parcInfoAPI.models.Smartphone;
 import fr.afpa.pompey.cda17.parcInfoAPI.repositories.AppareilRepository;
 import fr.afpa.pompey.cda17.parcInfoAPI.repositories.SmartphoneRepository;
 import jakarta.transaction.Transactional;
-import org.hamcrest.CoreMatchers;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -40,22 +39,23 @@ public class SmartphoneControllerTest {
 
     @BeforeEach
     void setUp() {
-    Appareil appareil = new Appareil();
-    appareil.setLibelle("test appareil");
-    savedAppareil = appareilRepository.save(appareil);
+        Appareil appareil = new Appareil();
+        appareil.setLibelle("test appareil");
+        savedAppareil = appareilRepository.save(appareil);
 
-    Smartphone smartphone = new Smartphone();
+        Smartphone smartphone = new Smartphone();
 
-    smartphone.setEstSmartphone(true);
-    smartphone.setAppareil(savedAppareil);
-    savedSmartphone = smartphoneRepository.save(smartphone);
+        smartphone.setEstSmartphone(true);
+        smartphone.setAppareil(savedAppareil);
+        savedSmartphone = smartphoneRepository.save(smartphone);
 
     }
 
     @AfterEach
     void tearDown() {
-        if(savedSmartphone != null) smartphoneRepository.delete(savedSmartphone);
-        if(savedAppareil != null) appareilRepository.delete(savedAppareil);
+        if (savedSmartphone != null)
+            smartphoneRepository.delete(savedSmartphone);
+        if (savedAppareil != null) appareilRepository.delete(savedAppareil);
     }
 
     @Transactional
@@ -70,23 +70,22 @@ public class SmartphoneControllerTest {
     }
 
 
-
-
     @Transactional
-   @Test
+    @Test
     void getAllSmartphone() throws Exception {
         mockMvc.perform(get("/smartphones"))
                 .andExpect(status().isOk());
-   }
+    }
 
     @Transactional
-   @Test
+    @Test
     void getSmartphoneByIdAppareil() throws Exception {
         mockMvc.perform(get("/smartphone/" + savedSmartphone.getIdAppareil()))
-                .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.idAppareil", is(savedSmartphone.getIdAppareil())))
-                .andExpect(jsonPath("$.idAppareil", is(savedSmartphone.getAppareil().getId())));
+                .andExpect(jsonPath("$.idAppareil", is((int) savedSmartphone.getIdAppareil())))
+                .andExpect(jsonPath("$.appareil.id",
+                        is((int) savedSmartphone.getAppareil().getId())))
+                .andExpect(jsonPath("$.estSmartphone", is(savedSmartphone.isEstSmartphone())));
 
     }
 }
