@@ -7,9 +7,21 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Optional;
 
+/**
+ * Contrôleur REST pour la gestion des appareils dans l'API ParcInfo.
+ * <p>
+ * Ce contrôleur expose des endpoints pour créer, récupérer, mettre à jour et supprimer
+ * des objets {@link Appareil}. Il utilise le service {@link AppareilService} pour accéder
+ * à la logique métier et aux opérations de persistance.
+ * </p>
+ */
 @RestController
 public class AppareilController {
 
+    /**
+     * Service chargé de gérer les opérations sur les entités {@link Appareil}.
+     * Il est injecté automatiquement par Spring grâce à l'annotation {@code @Autowired}.
+     */
     @Autowired
     private AppareilService appareilService;
 
@@ -22,6 +34,7 @@ public class AppareilController {
      */
     @PostMapping("/appareil")
     public Appareil createAppareil(@RequestBody Appareil appareil) {
+        // Sauvegarde l'appareil en base de données via le service
         return appareilService.save(appareil);
     }
 
@@ -33,6 +46,7 @@ public class AppareilController {
      */
     @GetMapping("/appareils")
     public Iterable<Appareil> getAllAppareil() {
+        // Appel au service pour obtenir la liste de tous les appareils
         return appareilService.getAppareils();
     }
 
@@ -41,37 +55,48 @@ public class AppareilController {
      *
      * @param id Identifiant de l'appareil (passé dans l'URL).
      * @return L'appareil correspondant à l'ID, ou null si non trouvé.
+     *         Retourne un objet Appareil si l'identifiant existe en base de données.
+     *         Sinon, retourne null.
      */
     @GetMapping("/appareil/{id}")
     public Appareil getAppareilById(@PathVariable("id") long id) {
+        // Recherche l'appareil correspondant à l'identifiant fourni
         Optional<Appareil> appareil = appareilService.getAppareil(id);
+        // Retourne l'appareil s'il est trouvé, sinon retourne null
         return appareil.orElse(null);
     }
 
     /**
      * Met à jour partiellement un appareil existant.
-     * Seul le libellé peut être modifié dans cette implémentation.
+     * Seul le champ 'libelle' peut être modifié dans cette implémentation.
      *
-     * @param id        Identifiant de l'appareil à mettre à jour.
+     * @param id        Identifiant de l'appareil à mettre à jour (passé dans l'URL).
      * @param appareil  Objet Appareil contenant les nouvelles valeurs.
-     *                  Seul le champ 'libelle' est pris en compte.
-     * @return L'appareil mis à jour, ou null si l'ID n'existe pas.
+     *                  Seul le champ 'libelle' est pris en compte pour la mise à jour.
+     * @return L'appareil mis à jour avec les nouvelles valeurs, ou null si l'ID n'existe pas.
      */
     @PutMapping("/appareil/{id}")
     public Appareil updateAppareil(@PathVariable("id") long id,
                                    @RequestBody Appareil appareil) {
+        // Recherche l'appareil correspondant à l'identifiant fourni
         Optional<Appareil> appareilOptional = appareilService.getAppareil(id);
         if (appareilOptional.isPresent()) {
+            // Si l'appareil existe, récupère l'objet actuel
             Appareil current = appareilOptional.get();
 
+            // Met à jour le champ 'libelle' si une nouvelle valeur est fournie
             String libelle = appareil.getLibelle();
-            if(libelle != null) {
+            if (libelle != null) {
+                // Met à jour le libellé de l'appareil
                 current.setLibelle(libelle);
             }
 
+            // Sauvegarde les modifications en base de données
             appareilService.save(current);
+            // Retourne l'appareil mis à jour
             return current;
         } else {
+            // Retourne null si l'appareil n'existe pas
             return null;
         }
     }
@@ -79,11 +104,12 @@ public class AppareilController {
     /**
      * Supprime définitivement un appareil par son identifiant.
      *
-     * @param id Identifiant de l'appareil à supprimer.
-     *           Aucune action si l'ID n'existe pas.
+     * @param id Identifiant de l'appareil à supprimer (passé dans l'URL).
+     *           Aucune action n'est effectuée si l'identifiant n'existe pas.
      */
     @DeleteMapping("/appareil/{id}")
     public void deleteAppareil(@PathVariable("id") long id) {
+        // Supprime l'appareil correspondant à l'identifiant fourni
         appareilService.deleteAppareil(id);
     }
 }

@@ -12,6 +12,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 
@@ -71,7 +72,7 @@ class PersonneControllerTest {
 
     @AfterEach
     void tearDown() {
-        if (this.savedPersonne != null && personneRepository.existsById(this.savedPersonne.getId())) {
+        if (this.savedPersonne != null) {
             try {
                 // Clear associations and save changes
                 this.savedPersonne.getAppareils().clear();
@@ -85,7 +86,7 @@ class PersonneControllerTest {
             }
         }
 
-        if (this.savedAppareil != null && appareilRepository.existsById(this.savedAppareil.getId())) {
+        if (this.savedAppareil != null) {
             try {
                 // Delete the Appareil entity
                 this.appareilRepository.deleteById(this.savedAppareil.getId());
@@ -114,6 +115,7 @@ class PersonneControllerTest {
         });
     }
 
+    @Transactional
     @Test
     void createPersonne_WhenValidRequest_ReturnsCreated() throws Exception {
         mockMvc.perform(post("/personne")
@@ -141,6 +143,7 @@ class PersonneControllerTest {
                 .andExpect(jsonPath("$.prenom", is("Pierre")));
     }
 
+    @Transactional
     @Test
     void updatePersonne_WhenValidRequest_ReturnsOk() throws Exception {
         mockMvc.perform(put("/personne/" + savedPersonne.getId())
@@ -155,24 +158,28 @@ class PersonneControllerTest {
                 .andExpect(jsonPath("$.nom", is("Kuntz")));
     }
 
+    @Transactional
     @Test
     void deletePersonne_WhenValidId_ReturnsOk() throws Exception {
         mockMvc.perform(delete("/personne/" + savedPersonne.getId()))
                 .andExpect(status().isOk());
     }
 
+    @Transactional
     @Test
     void addAppareilToPersonne_WhenValidIds_ReturnsUpdatedPersonne() throws Exception {
         mockMvc.perform(put("/personne/" + savedPersonne.getId() + "/appareil/" + savedAppareil.getId()))
                 .andExpect(status().isOk());
     }
 
+    @Transactional
     @Test
     void removeAppareilToPersonne_WhenValidIds_ReturnsUpdatedPersonne() throws Exception {
         mockMvc.perform(delete("/personne/" + savedPersonne.getId() + "/appareil/" + savedAppareil.getId()))
                 .andExpect(status().isOk());
     }
 
+    @Transactional
     @Test
     void testAddAppareilToPersonne_WhenValidRequest_ReturnsUpdatedPersonne() throws Exception {
         // Ensure the Appareil entities exist before running the test
