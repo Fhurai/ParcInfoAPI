@@ -1,12 +1,13 @@
 package fr.afpa.pompey.cda17.parcInfoAPI.models;
 
 import org.junit.jupiter.api.Test;
+import org.springframework.boot.test.context.SpringBootTest;
 
 import java.time.LocalDate;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
-
+@SpringBootTest
 class PersonneTest {
 
     @Test
