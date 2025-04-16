@@ -31,14 +31,14 @@ jobs:
           cache: maven
 
       - name: Wait for MySQL to be ready
-        timeout-minutes: 3
+        timeout-minutes: 5
         run: |
-          for i in `seq 1 15`; do
+          for i in `seq 1 30`; do  # More retries
             if mysqladmin ping -h127.0.0.1 -uroot -proot --silent; then
-              echo "MySQL is ready"
-              exit 0
+            echo "MySQL is ready"
+            exit 0
             fi
-            echo "MySQL not ready yet. Attempt $i/15"
+            echo "MySQL not ready yet. Attempt $i/30"
             sleep 5
           done
           exit 1
@@ -52,11 +52,12 @@ jobs:
 
       - name: Build with Maven
         run: |
-          ./mvnw --batch-mode --update-snapshots verify
+          ./mvnw --batch-mode verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=Fhurai_ParcInfoAPI
         env:
           SPRING_DATASOURCE_URL: jdbc:mysql://127.0.0.1:3306/parcinfo
           SPRING_DATASOURCE_USERNAME: root
           SPRING_DATASOURCE_PASSWORD: root
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
       - name: Prepare artifact
         run: mkdir staging && cp target/*.jar staging
