@@ -33,40 +33,23 @@ jobs:
       - name: Wait for MySQL to be ready
         timeout-minutes: 3
         run: |
-          for i in `seq 1 15`; do  # Increased to 15 attempts
+          for i in `seq 1 15`; do
             if mysqladmin ping -h127.0.0.1 -uroot -proot --silent; then
               echo "MySQL is ready"
               exit 0
             fi
             echo "MySQL not ready yet. Attempt $i/15"
-            sleep 5  # Increased sleep time
+            sleep 5
           done
-          echo "MySQL did not start in time"
           exit 1
 
       - name: Initialize database schema
         run: |
-          echo "Current directory:"
-          pwd
-          echo "SQL file contents:"
-          ls -la conception/parcinfo.sql
           mysql -h 127.0.0.1 -u root -proot parcinfo < conception/parcinfo.sql
-
-      - name: Set up the Maven dependencies caching
-        uses: actions/cache@v3
-        with:
-          path: ~/.m2
-          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
-          restore-keys: ${{ runner.os }}-m2
-
-      - name: Install Maven dependencies
-        run: mvn install
 
       - name: Build with Maven
         run: |
-          mvn --batch-mode --update-snapshots verify -Dspring.profiles.active=local
-          # If tests still fail, add temporary test skipping:
-          # mvn --batch-mode --update-snapshots verify -DskipTests
+          mvn --batch-mode --update-snapshots verify -Dspring.jpa.show-sql=true -Dlogging.level.org.hibernate.SQL=DEBUG
 
       - name: Prepare artifact
         run: mkdir staging && cp target/*.jar staging
