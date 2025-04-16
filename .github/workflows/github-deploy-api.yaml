@@ -53,6 +53,10 @@ jobs:
       - name: Build with Maven
         run: |
           ./mvnw --batch-mode --update-snapshots verify
+        env:
+          SPRING_DATASOURCE_URL: jdbc:mysql://127.0.0.1:3306/parcinfo
+          SPRING_DATASOURCE_USERNAME: root
+          SPRING_DATASOURCE_PASSWORD: root
 
       - name: Prepare artifact
         run: mkdir staging && cp target/*.jar staging
