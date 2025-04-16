@@ -65,9 +65,3 @@ jobs:
         with:
           name: artefact
           path: staging
-
-  deploy:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Prepare deployment
-        run: echo "Deployment in progress"
