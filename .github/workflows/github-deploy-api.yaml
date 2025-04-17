@@ -69,7 +69,7 @@ jobs:
       - name: Send Discord notification
         if: always()
         env:
-          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          DISCORD_WEBHOOK_TOKEN: ${{ secrets.DISCORD_WEBHOOK_TOKEN }}
         run: |
           STATUS="${{ job.status }}"
           if [ "$STATUS" = "success" ]; then
