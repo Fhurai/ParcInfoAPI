@@ -78,11 +78,11 @@ jobs:
           STATUS="${{ needs.build.result }}"
           if [ "$STATUS" = "success" ]; then
             COLOR=3066993
-            MESSAGE="✅ Spring Boot CI Pipeline Succeeded"
+            MESSAGE="✅ Parc Info Pipeline Succeeded"
             IMAGE_URL="https://c.tenor.com/Ud36Rrav628AAAAC/tenor.gif"
           else
             COLOR=15158332
-            MESSAGE="❌ Spring Boot CI Pipeline Failed"
+            MESSAGE="❌ Parc Info Pipeline Failed"
             IMAGE_URL="https://c.tenor.com/nsEfkzN30TIAAAAC/tenor.gif"
           fi
 
@@ -102,4 +102,45 @@ jobs:
           )
 
           curl -X POST -H "Content-Type: application/json" -d "$PAYLOAD" "$DISCORD_WEBHOOK_URL"
+        continue-on-error: true
+
+  teams:
+    runs-on: ubuntu-latest
+    needs: build
+    if: always()
+    steps:
+      - name: Send Microsoft Teams notification
+        env:
+          TEAMS_WEBHOOK_URL: ${{ secrets.TEAMS_WEBHOOK_URL }}
+        run: |
+          STATUS="${{ needs.build.result }}"
+          if [ "$STATUS" = "success" ]; then
+            COLOR="00FF00"
+            MESSAGE="✅ Parc Info Pipeline Succeeded"
+          else
+            COLOR="FF0000"
+            MESSAGE="❌ Parc Info Pipeline Failed"
+          fi
+
+          PAYLOAD=$(cat <<EOF
+          {
+            "@type": "MessageCard",
+            "@context": "http://schema.org/extensions",
+            "summary": "${MESSAGE}",
+            "themeColor": "${COLOR}",
+            "title": "${MESSAGE}",
+            "sections": [{
+              "facts": [
+                {"name": "Workflow", "value": "${{ github.workflow }}"},
+                {"name": "Repository", "value": "${{ github.repository }}"},
+                {"name": "Branch", "value": "${{ github.ref }}"},
+                {"name": "Commit", "value": "[${GITHUB_SHA:0:7}](${{ github.server_url }}/${{ github.repository }}/commit/$GITHUB_SHA)"}
+              ],
+              "markdown": true
+            }]
+          }
+          EOF
+          )
+
+          curl -H "Content-Type: application/json" -d "$PAYLOAD" "$TEAMS_WEBHOOK_URL"
         continue-on-error: true
