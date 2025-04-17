@@ -1,4 +1,4 @@
-name: Deploy Spring Boot API
+name: Deploy Parc Info API
 run-name: ${{ github.actor }} deploys the application
 on: [push]
 
@@ -78,11 +78,11 @@ jobs:
           STATUS="${{ needs.build.result }}"
           if [ "$STATUS" = "success" ]; then
             COLOR=3066993
-            MESSAGE="✅ Parc Info Pipeline Succeeded"
+            MESSAGE="✅ Parc Info API Pipeline Succeeded"
             IMAGE_URL="https://c.tenor.com/Ud36Rrav628AAAAC/tenor.gif"
           else
             COLOR=15158332
-            MESSAGE="❌ Parc Info Pipeline Failed"
+            MESSAGE="❌ Parc Info API Pipeline Failed"
             IMAGE_URL="https://c.tenor.com/nsEfkzN30TIAAAAC/tenor.gif"
           fi
 
@@ -116,10 +116,10 @@ jobs:
           STATUS="${{ needs.build.result }}"
           if [ "$STATUS" = "success" ]; then
             COLOR="00FF00"
-            MESSAGE="✅ Parc Info Pipeline Succeeded"
+            MESSAGE="✅ Parc Info API Pipeline Succeeded"
           else
             COLOR="FF0000"
-            MESSAGE="❌ Parc Info Pipeline Failed"
+            MESSAGE="❌ Parc Info API Pipeline Failed"
           fi
 
           PAYLOAD=$(cat <<EOF
