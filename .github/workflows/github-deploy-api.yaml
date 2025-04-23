@@ -183,4 +183,6 @@ jobs:
           push: true
           tags: ${{secrets.DOCKERHUB_USER}}/parcinfo_api:latest
 
-      - run: echo "This job status is ${{ job.status }}"
+      - name: Status
+        if: always()
+        run: echo "This job status is ${{ job.status }}"

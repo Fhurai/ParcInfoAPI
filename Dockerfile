@@ -8,7 +8,7 @@ VOLUME /tmp
 WORKDIR /app
 
 # Copy the Spring Boot jar into the container
-COPY target/parcInfoAPI-0.0.1-SNAPSHOT.jar api.jar
+COPY parcInfoAPI-0.0.1-SNAPSHOT.jar api.jar
 
 # Expose the application port
 EXPOSE 8082
