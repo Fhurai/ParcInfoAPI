@@ -1,3 +1,3 @@
 #!/bin/bash
 
-clear && mvn test spring-boot:run
+set -a && source .env && set +a && clear && mvn test spring-boot:run
