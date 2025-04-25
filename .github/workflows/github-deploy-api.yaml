@@ -50,6 +50,12 @@ jobs:
       - name: Permission Mvnw
         run: chmod +x ./mvnw
 
+      - name: copy the applications.properties file
+        run: cp ./src/main/resources/application.properties.example ./src/main/resources/application.properties
+
+      - name: List files in the repository
+        run: ls -l -R ${{ github.workspace }}
+
       - name: Build with Maven
         run: |
           ./mvnw --batch-mode --update-snapshots verify
@@ -65,12 +71,6 @@ jobs:
         with:
           name: artefact
           path: staging
-
-      - name: copy the applications.properties file
-        run: cp ./src/main/resources/application.properties.example ./src/main/resources/application.properties
-
-      - name: List files in the repository
-        run: ls -l -R ${{ github.workspace }}
 
   discord:
     runs-on: ubuntu-latest
